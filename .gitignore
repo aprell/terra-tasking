@@ -32,4 +32,8 @@
 *.dSYM/
 *.su
 
+include/terra_tasking_fib.h
+src/terra_tasking_fib.c
+src/fib
+
 !lib/libtasking.a
