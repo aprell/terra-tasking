@@ -1,4 +1,4 @@
-all clean:
+all test clean:
 	cd src && $(MAKE) $@
 
-.PHONY: all clean
+.PHONY: all test clean

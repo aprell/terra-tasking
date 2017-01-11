@@ -22,7 +22,10 @@ fib.o: fib.t tasking.t
 %.o: %.t
 	terra $<
 
+test: fib
+	@NUM_THREADS=4 ./fib | grep "tasks executed" | sort
+
 clean:
 	rm -f fib $(OBJS) $(GEN_FILES)
 
-.PHONY: all clean
+.PHONY: all test clean
