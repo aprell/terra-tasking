@@ -5,7 +5,7 @@ LDFLAGS = -pthread
 
 GEN_FILES = \
 ../include/terra_tasking_fib.h \
-terra_tasking_fib.c \
+terra_tasking_fib.c
 
 GEN_SRCS = $(filter %.c,$(GEN_FILES))
 
