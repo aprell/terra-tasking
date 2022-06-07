@@ -1,15 +1,16 @@
-CC = gcc
-CPPFLAGS += -I../include
-CFLAGS = -Wall -Wextra -O3
-LDFLAGS = -pthread
+ifeq ($(CC), $(filter $(CC), cc gcc))
+  LDFLAGS += -no-pie
+endif
 
-GEN_FILES = \
-../include/terra_tasking_fib.h \
-terra_tasking_fib.c
+CPPFLAGS = -I../include
+CFLAGS += -Wall -Wextra -O3
+LDFLAGS += -pthread
 
-GEN_SRCS = $(filter %.c,$(GEN_FILES))
+GEN_FILES := \
+  ../include/terra_tasking_fib.h \
+  terra_tasking_fib.c
 
-OBJS = fib.o terra_tasking.o $(GEN_SRCS:.c=.o)
+OBJS := fib.o terra_tasking.o terra_tasking_fib.o
 
 all: fib
 
@@ -23,9 +24,9 @@ fib.o: fib.t tasking.t
 	terra $<
 
 test: fib
-	@NUM_THREADS=4 ./fib | grep "tasks executed" | sort
+	@NUM_THREADS=4 ./$< | grep "tasks executed" | sort
 
 clean:
-	rm -f fib $(OBJS) $(GEN_FILES)
+	$(RM) fib $(OBJS) $(GEN_FILES)
 
 .PHONY: all test clean

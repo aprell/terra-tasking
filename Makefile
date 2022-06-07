@@ -1,4 +1,4 @@
 all test clean:
-	cd src && $(MAKE) $@
+	$(MAKE) -C src $@
 
 .PHONY: all test clean
