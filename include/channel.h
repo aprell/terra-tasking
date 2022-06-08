@@ -2,7 +2,7 @@
 #define CHANNEL_H
 
 #include <stdbool.h>
-#include "overload_channel_alloc.h"
+#include "macro_utils.h"
 
 typedef struct Channel Channel;
 
@@ -21,6 +21,10 @@ enum {
 /*****************************************************************************
  * Channel API
  *****************************************************************************/
+
+#define __channel_alloc_impl2(n, ...) __channel_alloc_impl__ ## n(__VA_ARGS__)
+#define __channel_alloc_impl(n, ...) __channel_alloc_impl2(n, __VA_ARGS__)
+#define channel_alloc(...) __channel_alloc_impl(VA_NARGS(__VA_ARGS__), __VA_ARGS__)
 
 Channel *channel_alloc(unsigned int size, unsigned int n, int impl);
 Channel *channel_alloc(unsigned int size, unsigned int n); // MPMC

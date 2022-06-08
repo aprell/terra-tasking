@@ -56,12 +56,12 @@ local function make_task(name, ty)
 
     local function emit_async_fundef(file)
         if rettype == "void" then
-            file:write(("void async_%s(%s)\n{ ASYNC(%s, %s); }\n"):
+            file:write(("void async_%s(%s) { ASYNC(%s, %s); }\n"):
                 format(name, ctypes:concat(", "), name, args:concat(", ")))
         else
-            file:write(("future future_%s(%s)\n{ return FUTURE(%s, %s); }\n"):
+            file:write(("future future_%s(%s) { return FUTURE(%s, %s); }\n"):
                 format(name, ctypes:concat(", "), name, args:concat(", ")))
-            file:write(("%s await_%s(future f)\n{ return AWAIT(f, %s); }\n"):
+            file:write(("%s await_%s(future f) { return AWAIT(f, %s); }\n"):
                 format(rettype, name, rettype))
         end
     end
@@ -75,6 +75,8 @@ local function make_task(name, ty)
 
     local source = assert(io.open(sourcename, "w"))
     source:write "#include \"async.h\"\n"
+    source:write "#include \"future.h\"\n"
+    source:write("#include \"" .. headername .. "\"\n")
 
     emit_async_fundecl(header)
     emit_fundecl(source)
