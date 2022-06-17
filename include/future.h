@@ -1,7 +1,6 @@
 #ifndef FUTURE_H
 #define FUTURE_H
 
-#include <assert.h>
 #include "macro_utils.h"
 #include "runtime.h"
 
@@ -9,22 +8,20 @@
 
 typedef void *future;
 
-#define new_future(f) new_##f##_future()
-
 #ifndef FUTURE_FREELIST_SIZE
   #define FUTURE_FREELIST_SIZE 1000
 #endif
 
 #define FUTURE_DECL_FREELIST(type) \
-static PRIVATE unsigned int __future_##type##_freelist_items = 0; \
-static PRIVATE future __future_##type##_freelist[FUTURE_FREELIST_SIZE]; \
+static __thread unsigned int __future_##type##_freelist_items = 0; \
+static __thread future __future_##type##_freelist[FUTURE_FREELIST_SIZE]; \
 
 #define FUTURE_DECL(ret, fname, decls, args...) \
 struct fname##_task_data { \
     decls; \
     future __f; \
 }; \
-static inline future new_##fname##_future(void) \
+static inline future fname##_future_create(void) \
 { \
     if (__future_##ret##_freelist_items > 0) { \
         return __future_##ret##_freelist[--__future_##ret##_freelist_items]; \
@@ -33,10 +30,6 @@ static inline future new_##fname##_future(void) \
 } \
 void fname##_task_func(struct fname##_task_data *__d) \
 { \
-    Task *this = get_current_task(); \
-    assert(!is_root_task(this)); \
-    assert((struct fname##_task_data *)this->data == __d); \
-    \
     UNPACK(__d, args, __f); \
     ret __tmp = fname(args); \
     channel_send(__f, &__tmp, sizeof(__tmp)); \
@@ -48,11 +41,11 @@ void fname##_task_func(struct fname##_task_data *__d) \
     struct f##_task_data *__d; \
     future __f; \
     __task = task_alloc(); \
-    __task->parent = get_current_task(); \
+    __task->parent = current_task; \
     __task->fn = (void (*)(void *))f##_task_func; \
     \
     __d = (struct f##_task_data *)__task->data; \
-    __f = new_future(f); \
+    __f = f##_future_create(); \
     PACK(__d, args, __f); \
     push(__task); \
     __f; \
