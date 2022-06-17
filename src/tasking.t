@@ -71,11 +71,9 @@ local function make_task(name, ty)
 
     local header = assert(io.open("../include/" .. headername, "w"))
     header:write "#include <stdint.h>\n"
-    header:write "typedef void *future;\n"
+    header:write "#include \"tasking.h\"\n"
 
     local source = assert(io.open(sourcename, "w"))
-    source:write "#include \"async.h\"\n"
-    source:write "#include \"future.h\"\n"
     source:write("#include \"" .. headername .. "\"\n")
 
     emit_async_fundecl(header)
